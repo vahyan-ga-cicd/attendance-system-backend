@@ -33,11 +33,11 @@ jobs:
           aws-region: ap-south-1
 
       - name: Install Plugins
-        working-directory: ./backend
+        
         run: sls plugin install -n serverless-python-requirements
 
       - name: Deploy with Serverless
-        working-directory: ./backend
+        
         run: sls deploy --stage dev
         env:
           AWS_REGION: ap-south-1
