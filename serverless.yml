@@ -35,6 +35,8 @@ package:
 functions:
   api:
     handler: app.main.handler
+    layers:
+      - { Ref: PythonRequirementsLambdaLayer }
     events:
       - httpApi: '*'
 
