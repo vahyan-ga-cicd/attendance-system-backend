@@ -10,8 +10,8 @@ provider:
   httpApi:
     cors: true
   environment:
-    ATTENDANCE_TABLE: ${self:service}-attendance-${self:provider.stage}
-    EMPLOYEE_TABLE: ${self:service}-employee-${self:provider.stage}
+    ATTENDANCE_TABLE: attendance
+    EMPLOYEE_TABLE: employee
     S3_BUCKET: employee-face-data
 
   iam:
@@ -56,34 +56,3 @@ custom:
       - jmespath
       - pip
       - setuptools
-
-resources:
-  Resources:
-    AttendanceTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:provider.environment.ATTENDANCE_TABLE}
-        AttributeDefinitions:
-          - AttributeName: employee_id
-            AttributeType: S
-          - AttributeName: timestamp
-            AttributeType: S
-        KeySchema:
-          - AttributeName: employee_id
-            KeyType: HASH
-          - AttributeName: timestamp
-            KeyType: RANGE
-        BillingMode: PAY_PER_REQUEST
-
-    EmployeeTable:
-      Type: AWS::DynamoDB::Table
-      Properties:
-        TableName: ${self:provider.environment.EMPLOYEE_TABLE}
-        AttributeDefinitions:
-          - AttributeName: employee_id
-            AttributeType: S
-        KeySchema:
-          - AttributeName: employee_id
-            KeyType: HASH
-        BillingMode: PAY_PER_REQUEST
-
