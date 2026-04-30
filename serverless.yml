@@ -1,0 +1,89 @@
+service: employee-attendance-backend
+
+provider:
+  name: aws
+  runtime: python3.9
+  region: ${env:AWS_REGION, 'ap-south-1'}
+  stage: dev
+  memorySize: 3008
+  timeout: 300
+  httpApi:
+    cors: true
+  environment:
+    ATTENDANCE_TABLE: ${self:service}-attendance-${self:provider.stage}
+    EMPLOYEE_TABLE: ${self:service}-employee-${self:provider.stage}
+    S3_BUCKET: ${self:service}-records-${self:provider.stage}
+
+  iam:
+    role:
+      statements:
+        - Effect: Allow
+          Action:
+            - "dynamodb:*"
+            - "s3:*"
+          Resource: "*"
+
+package:
+  patterns:
+    - "!venv/**"
+    - "!.env"
+    - "!.git/**"
+    - "!.gitignore"
+    - "!.next/**"
+    - "!node_modules/**"
+
+functions:
+  api:
+    handler: app.main.handler
+    events:
+      - httpApi: '*'
+
+plugins:
+  - serverless-python-requirements
+
+custom:
+  pythonRequirements:
+    dockerizePip: true
+    slim: true
+    layer: true # Keeping layer true because OpenCV is large
+
+resources:
+  Resources:
+    AttendanceTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.ATTENDANCE_TABLE}
+        AttributeDefinitions:
+          - AttributeName: employee_id
+            AttributeType: S
+          - AttributeName: timestamp
+            AttributeType: S
+        KeySchema:
+          - AttributeName: employee_id
+            KeyType: HASH
+          - AttributeName: timestamp
+            KeyType: RANGE
+        BillingMode: PAY_PER_REQUEST
+
+    EmployeeTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: ${self:provider.environment.EMPLOYEE_TABLE}
+        AttributeDefinitions:
+          - AttributeName: employee_id
+            AttributeType: S
+        KeySchema:
+          - AttributeName: employee_id
+            KeyType: HASH
+        BillingMode: PAY_PER_REQUEST
+
+    EmployeeRecordsBucket:
+      Type: AWS::S3::Bucket
+      Properties:
+        BucketName: ${self:provider.environment.S3_BUCKET}
+        CorsConfiguration:
+          CorsRules:
+            - AllowedHeaders: ['*']
+              AllowedMethods: [GET, PUT, POST, DELETE, HEAD]
+              AllowedOrigins: ['*']
+              MaxAge: 3000
