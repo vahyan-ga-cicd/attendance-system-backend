@@ -45,7 +45,15 @@ custom:
   pythonRequirements:
     dockerizePip: true
     slim: true
-    layer: true # Keeping layer true because OpenCV is large
+    layer: true
+    strip: true
+    noDeploy:
+      - boto3
+      - botocore
+      - docutils
+      - jmespath
+      - pip
+      - setuptools
 
 resources:
   Resources:
