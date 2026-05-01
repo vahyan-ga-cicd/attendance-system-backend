@@ -16,8 +16,8 @@ router = APIRouter()
 async def onboard_employee(data: EmployeeCreate, images: List[str]):
     print(f"DEBUG: Received {len(images)} images for onboarding.")
     
-    if len(images) < 1:
-        raise HTTPException(status_code=400, detail="At least one image is required for onboarding.")
+    if len(images) < 5:
+        raise HTTPException(status_code=400, detail="For high accuracy, please provide at least 5 images from different angles.")
 
     # 1. Generate ID if not provided
     emp_id = data.employee_id or get_next_employee_id()

@@ -79,12 +79,19 @@ def identify_face(face_img):
         
         if not _is_model_loaded:
             return None, 100
+        
+        # PRE-PROCESSING: Fix lighting issues
+        if len(face_img.shape) == 3:
+            face_img = cv2.cvtColor(face_img, cv2.COLOR_BGR2GRAY)
+        face_img = cv2.equalizeHist(face_img)
             
         label, confidence = recognizer.predict(face_img)
         
-        # LBPH: Lower confidence is better match. 120 is standard strict threshold.
-        if confidence < 115: 
+        # LOGIC: Lower is better. 85 is strict for multiple users.
+        if confidence < 85: 
             return label, confidence
+        
+        print(f"DEBUG: Face rejected. Match was {label} but confidence was {confidence}")
         return None, confidence
     except Exception as e:
         print(f"Identify error: {e}")
