@@ -23,7 +23,7 @@ async def check_in(data: AttendanceCheckIn):
 
     label, confidence = identify_face(face)
     if label is None:
-        raise HTTPException(status_code=401, detail=f"Face not recognized (Confidence: {confidence:.2f})")
+        raise HTTPException(status_code=401, detail="You are not an authorized person.")
 
     employee_id = f"VAH{label:03d}"
     now = datetime.now()
@@ -63,7 +63,7 @@ async def check_in(data: AttendanceCheckIn):
     # 2. Get employee details
     emp_resp = employee_table.get_item(Key={"employee_id": employee_id})
     if "Item" not in emp_resp:
-        raise HTTPException(status_code=404, detail="Employee record not found")
+        raise HTTPException(status_code=401, detail="You are not an authorized person.")
     
     employee = emp_resp["Item"]
 

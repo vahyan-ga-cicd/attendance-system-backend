@@ -10,9 +10,9 @@ provider:
   httpApi:
     cors: true
   environment:
-    ATTENDANCE_TABLE: attendance
-    EMPLOYEE_TABLE: employee
-    S3_BUCKET: employee-face-data
+    ATTENDANCE_TABLE: ${env:ATTENDANCE_TABLE, 'attendance'}
+    EMPLOYEE_TABLE: ${env:EMPLOYEE_TABLE, 'employee'}
+    S3_BUCKET: ${env:S3_BUCKET, 'employee-face-data'}
 
   iam:
     role:
